@@ -7511,21 +7511,778 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=730408b9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7b6cbb91">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="LO12_Project">LO12_Project<a class="anchor-link" href="#LO12_Project">¶</a></h1><h3 id="%5BDonn%C3%A9es%5D">[Données]<a class="anchor-link" href="#%5BDonn%C3%A9es%5D">¶</a></h3><p>Bonjour, je vous présente ici mon projet LO12 sur [données].</p>
-<p>Veuillez trouver ci-dessous les instructions pour exécuter le projet.</p>
-<h3 id="%5BInstallation%5D">[Installation]<a class="anchor-link" href="#%5BInstallation%5D">¶</a></h3><ol>
-<li>Installer les dépendances nécessaires en utilisant pip. Assurez-vous d'avoir Python installé sur votre machine.</li>
-<li>Ouvrez un terminal et naviguez jusqu'au répertoire du projet.</li>
-<li>Exécutez la commande suivante pour installer les dépendances :</li>
+<h1 id="LO12-P25">LO12 P25<a class="anchor-link" href="#LO12-P25">¶</a></h1><h2 id="Analyse-des-habitudes-d'achat-Steam-avec-l'algorithme-Apriori">Analyse des habitudes d'achat Steam avec l'algorithme Apriori<a class="anchor-link" href="#Analyse-des-habitudes-d'achat-Steam-avec-l'algorithme-Apriori">¶</a></h2><h3 id="LE-PELTIER-Swan">LE PELTIER Swan<a class="anchor-link" href="#LE-PELTIER-Swan">¶</a></h3><p>Ce notebook accompagne un projet d'analyse de données Steam, utilisant l'algorithme Apriori pour extraire des règles d'association et générer des recommandations de jeux. Nous passerons par les étapes suivantes :</p>
+<ol>
+<li><strong>Importation des bibliothèques</strong></li>
+<li><strong>Téléchargement et chargement des données depuis KaggleHub</strong></li>
+<li><strong>Prétraitement et nettoyage</strong></li>
+<li><strong>Construction des transactions</strong></li>
+<li><strong>Extraction des itemsets fréquents et génération des règles</strong></li>
+<li><strong>Génération de règles au format CLIPS</strong></li>
+<li><strong>Test interactif des règles CLIPS</strong></li>
+<li><strong>Conclusion</strong></li>
 </ol>
-<pre><code>pip install -r requirements.txt
-</code></pre>
+<h2 id="Prerequis">Prerequis<a class="anchor-link" href="#Prerequis">¶</a></h2><p>Assurez-vous d'avoir installé les bibliothèques nécessaires :</p>
+<div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>mlxtend<span class="w"> </span>clipspy<span class="w"> </span>kagglehub
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d4adaf23">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="1.-Import-des-biblioth%C3%A8ques">1. Import des bibliothèques<a class="anchor-link" href="#1.-Import-des-biblioth%C3%A8ques">¶</a></h1>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=48bd31cd">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlxtend.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlxtend.frequent_patterns</span><span class="w"> </span><span class="kn">import</span> <span class="n">apriori</span><span class="p">,</span> <span class="n">association_rules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">kagglehub</span>  <span class="c1"># interface personnalisée pour Kaggle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">clips</span>      <span class="c1"># API Python pour CLIPS</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8ec0afea">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="2.-T%C3%A9l%C3%A9charger-et-charger-les-donn%C3%A9es-Steam">2. Télécharger et charger les données Steam<a class="anchor-link" href="#2.-T%C3%A9l%C3%A9charger-et-charger-les-donn%C3%A9es-Steam">¶</a></h2><p>Dans cette section, nous téléchargeons le jeu de données <a href="https://www.kaggle.com/datasets/tamber/steam-video-games">@tamber/steam-video-games</a> depuis KaggleHub et le chargeons dans un DataFrame pandas. Nous vérifions également l'intégrité du fichier car j'ai eu plusieurs problème de donné corompu au moment du téléchargement.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1759c46e">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_steam_data</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"tamber/steam-video-games"</span><span class="p">,</span>
+                    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"steam-200k.csv"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># Téléchargement via KaggleHub</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">kagglehub</span><span class="o">.</span><span class="n">dataset_download</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dataset téléchargé dans : </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Construction du chemin vers le fichier et vérification</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Fichier introuvable ou corrompu : </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Lecture du CSV sans en-tête, avec noms de colonnes personnalisés</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="s1">'game_name'</span><span class="p">,</span> <span class="s1">'purchase'</span><span class="p">,</span> <span class="s1">'playtime'</span><span class="p">,</span> <span class="s1">'unused'</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span>
+                     <span class="n">encoding</span><span class="o">=</span><span class="s1">'latin-1'</span><span class="p">,</span>
+                     <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span>
+                     <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">names</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Aperçu des données Steam (5 premières lignes) :"</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="c1"># Chargement des données</span>
+<span class="n">steam_df</span> <span class="o">=</span> <span class="n">load_steam_data</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Nombre total de lignes initiales : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">steam_df</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Dataset téléchargé dans : C:\Users\swanl\.cache\kagglehub\datasets\tamber\steam-video-games\versions\3
+Aperçu des données Steam (5 premières lignes) :
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>user_id</th>
+<th>game_name</th>
+<th>purchase</th>
+<th>playtime</th>
+<th>unused</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>151603712</td>
+<td>The Elder Scrolls V Skyrim</td>
+<td>purchase</td>
+<td>1.0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>1</th>
+<td>151603712</td>
+<td>The Elder Scrolls V Skyrim</td>
+<td>play</td>
+<td>273.0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>2</th>
+<td>151603712</td>
+<td>Fallout 4</td>
+<td>purchase</td>
+<td>1.0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>3</th>
+<td>151603712</td>
+<td>Fallout 4</td>
+<td>play</td>
+<td>87.0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>4</th>
+<td>151603712</td>
+<td>Spore</td>
+<td>purchase</td>
+<td>1.0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Nombre total de lignes initiales : 200000
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d860e8bd">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>La strucutre est faite de sorte a utilisé une ligne par jeux que possède l'utilisateur.</p>
+<p>Nous pouvons voir ici que les 5 premières entrée concerne l'utilisateur <code>151603712</code> et les différents jeux qu'il possède.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f48fe748">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="3.-Pr%C3%A9traitement-et-nettoyage-des-donn%C3%A9es">3. Prétraitement et nettoyage des données<a class="anchor-link" href="#3.-Pr%C3%A9traitement-et-nettoyage-des-donn%C3%A9es">¶</a></h2><p>Nous conservons uniquement les colonnes <code>user_id</code> et <code>game_name</code>, supprimons les doublons et retirons la colonne inutilisée.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c194fba7">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">preprocess_data</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># On garde uniquement les colonnes d'intérêt et on supprime les doublons</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="s1">'game_name'</span><span class="p">]]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="c1"># Application du prétraitement</span>
+<span class="n">clean_df</span> <span class="o">=</span> <span class="n">preprocess_data</span><span class="p">(</span><span class="n">steam_df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Nombre de lignes après nettoyage : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">clean_df</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">clean_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Nombre de lignes après nettoyage : 128804
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>user_id</th>
+<th>game_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>151603712</td>
+<td>The Elder Scrolls V Skyrim</td>
+</tr>
+<tr>
+<th>2</th>
+<td>151603712</td>
+<td>Fallout 4</td>
+</tr>
+<tr>
+<th>4</th>
+<td>151603712</td>
+<td>Spore</td>
+</tr>
+<tr>
+<th>6</th>
+<td>151603712</td>
+<td>Fallout New Vegas</td>
+</tr>
+<tr>
+<th>8</th>
+<td>151603712</td>
+<td>Left 4 Dead 2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=27a3f7dc">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Cela nous permet de nettoyer les doublons former par la notion (play / purchase) que nous n'intégrons pas dans notre algoritmhe.
+Cela nous permet également de travailler avec seulement les données qui nous intérèsse.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fa4e34b2">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="4.-Construction-des-transactions-pour-l'algorithme-Apriori">4. Construction des transactions pour l'algorithme Apriori<a class="anchor-link" href="#4.-Construction-des-transactions-pour-l'algorithme-Apriori">¶</a></h2><p>Nous groupons les jeux par utilisateur pour obtenir une liste de transactions, où chaque transaction représente l'ensemble des jeux d'un utilisateur.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=92101ea2">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_transactions</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="n">grouped</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">)[</span><span class="s1">'game_name'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grouped</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">transactions</span> <span class="o">=</span> <span class="n">build_transactions</span><span class="p">(</span><span class="n">clean_df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Nombre de transactions : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">transactions</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Nombre de transactions : 12393
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=397a09df">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="5.-Extraction-des-itemsets-fr%C3%A9quents-et-g%C3%A9n%C3%A9ration-des-r%C3%A8gles-d'association">5. Extraction des itemsets fréquents et génération des règles d'association<a class="anchor-link" href="#5.-Extraction-des-itemsets-fr%C3%A9quents-et-g%C3%A9n%C3%A9ration-des-r%C3%A8gles-d'association">¶</a></h2><p>Nous convertissons les transactions en matrice binaire, appliquons l'algorithme Apriori pour extraire les itemsets fréquents, puis générons les règles d'association avec un seuil de confiance minimal.</p>
+<p>Nous utilisons une valeur de support à 0.02 pour intégrer les jeux "niche" pour plus de recommandation.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b3c2e7a5">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">mine_association_rules</span><span class="p">(</span><span class="n">transactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                           <span class="n">min_support</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+                           <span class="n">min_confidence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># Encodage des transactions au format binaire</span>
+    <span class="n">te</span> <span class="o">=</span> <span class="n">TransactionEncoder</span><span class="p">()</span>
+    <span class="n">te_ary</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">transactions</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">transactions</span><span class="p">)</span>
+    <span class="n">trans_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">te_ary</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">te</span><span class="o">.</span><span class="n">columns_</span><span class="p">)</span>
+
+    <span class="c1"># Extraction des itemsets fréquents</span>
+    <span class="n">frequent_itemsets</span> <span class="o">=</span> <span class="n">apriori</span><span class="p">(</span><span class="n">trans_df</span><span class="p">,</span>
+                                <span class="n">min_support</span><span class="o">=</span><span class="n">min_support</span><span class="p">,</span>
+                                <span class="n">use_colnames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Génération des règles d'association</span>
+    <span class="n">rules</span> <span class="o">=</span> <span class="n">association_rules</span><span class="p">(</span><span class="n">frequent_itemsets</span><span class="p">,</span>
+                               <span class="n">metric</span><span class="o">=</span><span class="s2">"confidence"</span><span class="p">,</span>
+                               <span class="n">min_threshold</span><span class="o">=</span><span class="n">min_confidence</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rules</span>
+
+<span class="c1"># Extraction des règles avec support &gt;= 2% et confiance &gt;= 60%</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">mine_association_rules</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span>
+                               <span class="n">min_support</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+                               <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Nombre de règles générées : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">rules</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Nombre de règles générées : 5797
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>antecedents</th>
+<th>consequents</th>
+<th>antecedent support</th>
+<th>consequent support</th>
+<th>support</th>
+<th>confidence</th>
+<th>lift</th>
+<th>representativity</th>
+<th>leverage</th>
+<th>conviction</th>
+<th>zhangs_metric</th>
+<th>jaccard</th>
+<th>certainty</th>
+<th>kulczynski</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>(Arma 2 Operation Arrowhead)</td>
+<td>(Arma 2 Operation Arrowhead Beta (Obsolete))</td>
+<td>0.020173</td>
+<td>0.020173</td>
+<td>0.020173</td>
+<td>1.0</td>
+<td>49.572000</td>
+<td>1.0</td>
+<td>0.019766</td>
+<td>inf</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>1</th>
+<td>(Arma 2 Operation Arrowhead Beta (Obsolete))</td>
+<td>(Arma 2 Operation Arrowhead)</td>
+<td>0.020173</td>
+<td>0.020173</td>
+<td>0.020173</td>
+<td>1.0</td>
+<td>49.572000</td>
+<td>1.0</td>
+<td>0.019766</td>
+<td>inf</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>2</th>
+<td>(Call of Duty Black Ops)</td>
+<td>(Call of Duty Black Ops - Multiplayer)</td>
+<td>0.020495</td>
+<td>0.020495</td>
+<td>0.020495</td>
+<td>1.0</td>
+<td>48.791339</td>
+<td>1.0</td>
+<td>0.020075</td>
+<td>inf</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>3</th>
+<td>(Call of Duty Black Ops - Multiplayer)</td>
+<td>(Call of Duty Black Ops)</td>
+<td>0.020495</td>
+<td>0.020495</td>
+<td>0.020495</td>
+<td>1.0</td>
+<td>48.791339</td>
+<td>1.0</td>
+<td>0.020075</td>
+<td>inf</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>4</th>
+<td>(Call of Duty Modern Warfare 2)</td>
+<td>(Call of Duty Modern Warfare 2 - Multiplayer)</td>
+<td>0.027677</td>
+<td>0.027677</td>
+<td>0.027677</td>
+<td>1.0</td>
+<td>36.131195</td>
+<td>1.0</td>
+<td>0.026911</td>
+<td>inf</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f8c59df5">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="6.-G%C3%A9n%C3%A9ration-des-r%C3%A8gles-au-format-CLIPS">6. Génération des règles au format CLIPS<a class="anchor-link" href="#6.-G%C3%A9n%C3%A9ration-des-r%C3%A8gles-au-format-CLIPS">¶</a></h2><p>Pour utiliser CLIPS, nous convertissons les noms de jeux en symboles compatibles et écrivons les règles simples (1 antécédent → 1 conséquent) dans un fichier <code>.clp</code>. Cette fonction permet de générer automatiquement le fichier.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=73e63be1">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sanitize</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Remplace les caractères spéciaux par des underscores</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[&amp;()/\-]"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[^a-zA-Z0-9]"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"_+"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_clips_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                          <span class="n">output_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"regles_steam.clp"</span><span class="p">,</span>
+                          <span class="n">max_antecedents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                          <span class="n">max_consequents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rules</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">antecedents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'antecedents'</span><span class="p">])</span>
+            <span class="n">consequents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'consequents'</span><span class="p">])</span>
+
+            <span class="c1"># Filtre pour règles simples</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">antecedents</span><span class="p">)</span> <span class="o">!=</span> <span class="n">max_antecedents</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">consequents</span><span class="p">)</span> <span class="o">!=</span> <span class="n">max_consequents</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">ant</span> <span class="o">=</span> <span class="n">sanitize</span><span class="p">(</span><span class="n">antecedents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">cons</span> <span class="o">=</span> <span class="n">sanitize</span><span class="p">(</span><span class="n">consequents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(defrule regle-</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  (achat </span><span class="si">{</span><span class="n">ant</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"  =&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  (assert (achat </span><span class="si">{</span><span class="n">cons</span><span class="si">}</span><span class="s2">))</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  (printout t </span><span class="se">\"</span><span class="s2">Regle activée : </span><span class="si">{</span><span class="n">ant</span><span class="si">}</span><span class="s2"> =&gt; </span><span class="si">{</span><span class="n">cons</span><span class="si">}</span><span class="se">\"</span><span class="s2"> crlf))</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Fichier CLIPS généré : </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Génération du fichier de règles</span>
+<span class="n">generate_clips_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Fichier CLIPS généré : regles_steam.clp
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=da7ac142">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="7.-Test-interactif-des-r%C3%A8gles-CLIPS">7. Test interactif des règles CLIPS<a class="anchor-link" href="#7.-Test-interactif-des-r%C3%A8gles-CLIPS">¶</a></h2><p>Nous chargeons le fichier <code>.clp</code> dans l'environnement CLIPS, puis proposons un test interactif permettant à l'utilisateur d'entrer un jeu et d'observer les recommandations générées.</p>
+<p>Entrez un jeu pour tester les règles (ou laissez vide pour quitter)</p>
+<p>Voici quelques idée de test :</p>
+<blockquote>
+<p>Portal</p>
+<p>Half Life</p>
+<p>Robocraft</p>
+</blockquote>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3061dce6">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Initialisation de l'environnement CLIPS</span>
+<span class="n">environment</span> <span class="o">=</span> <span class="n">clips</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="n">environment</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"regles_steam.clp"</span><span class="p">)</span>
+
+<span class="c1"># Fonction de test interactif</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">clips_test</span><span class="p">(</span><span class="n">jeu_test</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Portal"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    
+    <span class="n">environment</span><span class="o">.</span><span class="n">assert_string</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(achat </span><span class="si">{</span><span class="n">sanitize</span><span class="p">(</span><span class="n">jeu_test</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">fact</span> <span class="ow">in</span> <span class="n">environment</span><span class="o">.</span><span class="n">facts</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Fait initial :"</span><span class="p">,</span> <span class="n">fact</span><span class="p">)</span>
+
+    <span class="n">environment</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Afficher les faits après exécution</span>
+    <span class="k">for</span> <span class="n">fact</span> <span class="ow">in</span> <span class="n">environment</span><span class="o">.</span><span class="n">facts</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Fait après exécution :"</span><span class="p">,</span> <span class="n">fact</span><span class="p">)</span>
+
+<span class="c1"># Boucle de test</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--- Test interactif des règles CLIPS ---"</span><span class="p">)</span>
+    <span class="n">environment</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">jeu_test</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"Entrez le nom du jeu à tester (ex : Portal): "</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">jeu_test</span> <span class="p">:</span>
+        <span class="n">clips_test</span><span class="p">(</span><span class="n">jeu_test</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Fin du test interactif."</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+--- Test interactif des règles CLIPS ---
+Fait initial : (achat Portal)
+
+
+Fait après exécution : (achat Portal)
+Fait après exécution : (achat Half_Life_2_Lost_Coast)
+Fait après exécution : (achat Counter_Strike_Source)
+Fait après exécution : (achat Half_Life_2_Deathmatch)
+Fait après exécution : (achat Half_Life_2)
+
+--- Test interactif des règles CLIPS ---
+Fait initial : (achat Portal_2)
+
+
+Fait après exécution : (achat Portal_2)
+Fait après exécution : (achat Portal)
+Fait après exécution : (achat Half_Life_2_Lost_Coast)
+Fait après exécution : (achat Counter_Strike_Source)
+Fait après exécution : (achat Half_Life_2_Deathmatch)
+Fait après exécution : (achat Half_Life_2)
+
+--- Test interactif des règles CLIPS ---
+Fait initial : (achat Half_Life)
+
+
+Fait après exécution : (achat Half_Life)
+Fait après exécution : (achat Counter_Strike)
+Fait après exécution : (achat Counter_Strike_Condition_Zero)
+Fait après exécution : (achat Counter_Strike_Condition_Zero_Deleted_Scenes)
+Fait après exécution : (achat Day_of_Defeat)
+Fait après exécution : (achat Deathmatch_Classic)
+Fait après exécution : (achat Ricochet)
+Fait après exécution : (achat Half_Life_Blue_Shift)
+Fait après exécution : (achat Half_Life_Opposing_Force)
+Fait après exécution : (achat Team_Fortress_Classic)
+
+--- Test interactif des règles CLIPS ---
+Fait initial : (achat Robocraft)
+
+
+Fait après exécution : (achat Robocraft)
+Fait après exécution : (achat Unturned)
+
+--- Test interactif des règles CLIPS ---
+Fin du test interactif.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a8b74f74">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">¶</a></h2><p>Nous avons réaliser un système capable de faire des recommandations en fonction d'un jeu que vous appréciez. Bien sur le système n'est pas comparable à ce que propose la plateforme Steam mais il permet de comprendre comment des système de recommandation peuvent fonctionner.</p>
+<p>Malgrès les 200 000 entrées le programme reste rapide à executer (quelques secondes).</p>
+<h2 id="Critique-et-am%C3%A9lioration">Critique et amélioration<a class="anchor-link" href="#Critique-et-am%C3%A9lioration">¶</a></h2><p>Le système actuelle pourrait etre ameliorer de deux manières :</p>
+<ol>
+<li><p>Utiliser un système de tag pour affiner les associations.</p>
+</li>
+<li><p>Augmenter considérablement le nombre de donnée.</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
