@@ -175,6 +175,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Erreur lors de l'exécution de CLIPS : {e}")
             break
-    
-
-    
