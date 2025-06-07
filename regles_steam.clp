@@ -11,28 +11,28 @@
   (printout t "Regle activée : Arma_2_Operation_Arrowhead_Beta_Obsolete => Arma_2_Operation_Arrowhead" crlf))
 
 (defrule regle-3
-  (achat Call_of_Duty_Black_Ops_Multiplayer)
-  =>
-  (assert (achat Call_of_Duty_Black_Ops))
-  (printout t "Regle activée : Call_of_Duty_Black_Ops_Multiplayer => Call_of_Duty_Black_Ops" crlf))
-
-(defrule regle-4
   (achat Call_of_Duty_Black_Ops)
   =>
   (assert (achat Call_of_Duty_Black_Ops_Multiplayer))
   (printout t "Regle activée : Call_of_Duty_Black_Ops => Call_of_Duty_Black_Ops_Multiplayer" crlf))
 
-(defrule regle-5
-  (achat Call_of_Duty_Modern_Warfare_2_Multiplayer)
+(defrule regle-4
+  (achat Call_of_Duty_Black_Ops_Multiplayer)
   =>
-  (assert (achat Call_of_Duty_Modern_Warfare_2))
-  (printout t "Regle activée : Call_of_Duty_Modern_Warfare_2_Multiplayer => Call_of_Duty_Modern_Warfare_2" crlf))
+  (assert (achat Call_of_Duty_Black_Ops))
+  (printout t "Regle activée : Call_of_Duty_Black_Ops_Multiplayer => Call_of_Duty_Black_Ops" crlf))
 
-(defrule regle-6
+(defrule regle-5
   (achat Call_of_Duty_Modern_Warfare_2)
   =>
   (assert (achat Call_of_Duty_Modern_Warfare_2_Multiplayer))
   (printout t "Regle activée : Call_of_Duty_Modern_Warfare_2 => Call_of_Duty_Modern_Warfare_2_Multiplayer" crlf))
+
+(defrule regle-6
+  (achat Call_of_Duty_Modern_Warfare_2_Multiplayer)
+  =>
+  (assert (achat Call_of_Duty_Modern_Warfare_2))
+  (printout t "Regle activée : Call_of_Duty_Modern_Warfare_2_Multiplayer => Call_of_Duty_Modern_Warfare_2" crlf))
 
 (defrule regle-7
   (achat Counter_Strike_Condition_Zero)
@@ -209,16 +209,16 @@
   (printout t "Regle activée : Half_Life_2_Lost_Coast => Counter_Strike_Source" crlf))
 
 (defrule regle-36
-  (achat Day_of_Defeat)
-  =>
-  (assert (achat Deathmatch_Classic))
-  (printout t "Regle activée : Day_of_Defeat => Deathmatch_Classic" crlf))
-
-(defrule regle-37
   (achat Deathmatch_Classic)
   =>
   (assert (achat Day_of_Defeat))
   (printout t "Regle activée : Deathmatch_Classic => Day_of_Defeat" crlf))
+
+(defrule regle-37
+  (achat Day_of_Defeat)
+  =>
+  (assert (achat Deathmatch_Classic))
+  (printout t "Regle activée : Day_of_Defeat => Deathmatch_Classic" crlf))
 
 (defrule regle-38
   (achat Half_Life)
@@ -287,16 +287,16 @@
   (printout t "Regle activée : Half_Life_Opposing_Force => Deathmatch_Classic" crlf))
 
 (defrule regle-49
-  (achat Ricochet)
-  =>
-  (assert (achat Deathmatch_Classic))
-  (printout t "Regle activée : Ricochet => Deathmatch_Classic" crlf))
-
-(defrule regle-50
   (achat Deathmatch_Classic)
   =>
   (assert (achat Ricochet))
   (printout t "Regle activée : Deathmatch_Classic => Ricochet" crlf))
+
+(defrule regle-50
+  (achat Ricochet)
+  =>
+  (assert (achat Deathmatch_Classic))
+  (printout t "Regle activée : Ricochet => Deathmatch_Classic" crlf))
 
 (defrule regle-51
   (achat Team_Fortress_Classic)
@@ -311,16 +311,16 @@
   (printout t "Regle activée : Garry_s_Mod => Team_Fortress_2" crlf))
 
 (defrule regle-53
-  (achat Half_Life_Blue_Shift)
-  =>
-  (assert (achat Half_Life))
-  (printout t "Regle activée : Half_Life_Blue_Shift => Half_Life" crlf))
-
-(defrule regle-54
   (achat Half_Life)
   =>
   (assert (achat Half_Life_Blue_Shift))
   (printout t "Regle activée : Half_Life => Half_Life_Blue_Shift" crlf))
+
+(defrule regle-54
+  (achat Half_Life_Blue_Shift)
+  =>
+  (assert (achat Half_Life))
+  (printout t "Regle activée : Half_Life_Blue_Shift => Half_Life" crlf))
 
 (defrule regle-55
   (achat Half_Life)
@@ -371,16 +371,16 @@
   (printout t "Regle activée : Half_Life_2_Episode_Two => Half_Life_2" crlf))
 
 (defrule regle-63
-  (achat Half_Life_2)
-  =>
-  (assert (achat Half_Life_2_Lost_Coast))
-  (printout t "Regle activée : Half_Life_2 => Half_Life_2_Lost_Coast" crlf))
-
-(defrule regle-64
   (achat Half_Life_2_Lost_Coast)
   =>
   (assert (achat Half_Life_2))
   (printout t "Regle activée : Half_Life_2_Lost_Coast => Half_Life_2" crlf))
+
+(defrule regle-64
+  (achat Half_Life_2)
+  =>
+  (assert (achat Half_Life_2_Lost_Coast))
+  (printout t "Regle activée : Half_Life_2 => Half_Life_2_Lost_Coast" crlf))
 
 (defrule regle-65
   (achat Half_Life_2_Episode_One)
@@ -389,16 +389,16 @@
   (printout t "Regle activée : Half_Life_2_Episode_One => Half_Life_2_Deathmatch" crlf))
 
 (defrule regle-66
-  (achat Half_Life_2_Deathmatch)
-  =>
-  (assert (achat Half_Life_2_Lost_Coast))
-  (printout t "Regle activée : Half_Life_2_Deathmatch => Half_Life_2_Lost_Coast" crlf))
-
-(defrule regle-67
   (achat Half_Life_2_Lost_Coast)
   =>
   (assert (achat Half_Life_2_Deathmatch))
   (printout t "Regle activée : Half_Life_2_Lost_Coast => Half_Life_2_Deathmatch" crlf))
+
+(defrule regle-67
+  (achat Half_Life_2_Deathmatch)
+  =>
+  (assert (achat Half_Life_2_Lost_Coast))
+  (printout t "Regle activée : Half_Life_2_Deathmatch => Half_Life_2_Lost_Coast" crlf))
 
 (defrule regle-68
   (achat Half_Life_Deathmatch_Source)
@@ -407,16 +407,16 @@
   (printout t "Regle activée : Half_Life_Deathmatch_Source => Half_Life_2_Deathmatch" crlf))
 
 (defrule regle-69
-  (achat Half_Life_2_Episode_Two)
-  =>
-  (assert (achat Half_Life_2_Episode_One))
-  (printout t "Regle activée : Half_Life_2_Episode_Two => Half_Life_2_Episode_One" crlf))
-
-(defrule regle-70
   (achat Half_Life_2_Episode_One)
   =>
   (assert (achat Half_Life_2_Episode_Two))
   (printout t "Regle activée : Half_Life_2_Episode_One => Half_Life_2_Episode_Two" crlf))
+
+(defrule regle-70
+  (achat Half_Life_2_Episode_Two)
+  =>
+  (assert (achat Half_Life_2_Episode_One))
+  (printout t "Regle activée : Half_Life_2_Episode_Two => Half_Life_2_Episode_One" crlf))
 
 (defrule regle-71
   (achat Half_Life_2_Episode_One)
@@ -455,16 +455,16 @@
   (printout t "Regle activée : Portal => Half_Life_2_Lost_Coast" crlf))
 
 (defrule regle-77
-  (achat Half_Life_Blue_Shift)
-  =>
-  (assert (achat Half_Life_Opposing_Force))
-  (printout t "Regle activée : Half_Life_Blue_Shift => Half_Life_Opposing_Force" crlf))
-
-(defrule regle-78
   (achat Half_Life_Opposing_Force)
   =>
   (assert (achat Half_Life_Blue_Shift))
   (printout t "Regle activée : Half_Life_Opposing_Force => Half_Life_Blue_Shift" crlf))
+
+(defrule regle-78
+  (achat Half_Life_Blue_Shift)
+  =>
+  (assert (achat Half_Life_Opposing_Force))
+  (printout t "Regle activée : Half_Life_Blue_Shift => Half_Life_Opposing_Force" crlf))
 
 (defrule regle-79
   (achat Half_Life_Blue_Shift)
@@ -581,16 +581,16 @@
   (printout t "Regle activée : The_Elder_Scrolls_V_Skyrim_Hearthfire => The_Elder_Scrolls_V_Skyrim_Dawnguard" crlf))
 
 (defrule regle-98
-  (achat The_Elder_Scrolls_V_Skyrim_Dragonborn)
-  =>
-  (assert (achat The_Elder_Scrolls_V_Skyrim_Hearthfire))
-  (printout t "Regle activée : The_Elder_Scrolls_V_Skyrim_Dragonborn => The_Elder_Scrolls_V_Skyrim_Hearthfire" crlf))
-
-(defrule regle-99
   (achat The_Elder_Scrolls_V_Skyrim_Hearthfire)
   =>
   (assert (achat The_Elder_Scrolls_V_Skyrim_Dragonborn))
   (printout t "Regle activée : The_Elder_Scrolls_V_Skyrim_Hearthfire => The_Elder_Scrolls_V_Skyrim_Dragonborn" crlf))
+
+(defrule regle-99
+  (achat The_Elder_Scrolls_V_Skyrim_Dragonborn)
+  =>
+  (assert (achat The_Elder_Scrolls_V_Skyrim_Hearthfire))
+  (printout t "Regle activée : The_Elder_Scrolls_V_Skyrim_Dragonborn => The_Elder_Scrolls_V_Skyrim_Hearthfire" crlf))
 
 (defrule regle-100
   (achat Trove)
